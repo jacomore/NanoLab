@@ -7,6 +7,15 @@ import pandas as pd
 
 
 def PeaksFinder(arr,std):
+    """
+    Calculates the multiple peaks (if any) of arr, along with the indeces at which they occur.
+    ------------------------------------------------------------------------------------------
+    input: 
+        arr: REAL, N-dimensional. Array whose maxima have to be computed. 
+        std: REAL. Standard deviation of the array calculated in the region without peaks. 
+    output: 
+        pos: list, INTEGER.  
+    """
     n = len(arr)
     peaks = []  # contains the values of arr in correspondence of the peaks
     pos = []   # contains the indeces of arr in correspondence of the peaks
