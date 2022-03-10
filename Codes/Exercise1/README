@@ -1,0 +1,1 @@
+ISSUE: to Bode plots need to be corrected by a factor *20, because in the current implementation they are in log-log scale.
