@@ -6,14 +6,14 @@ from module_1 import *
 
 # Sampling
 # length of the signal
-L = 2
+L = 20
 # sampling frequency
-sf = 500      
+sf = 5000      
 # sampling points
 sp = sf*L
 
 # time partition 
-t_part = np.linspace(0,L,sp) #[s]
+t_part = np.linspace(0,L,sp,endpoint=False) #[s]
 # frequency partition
 f_part = np.arange(0,sp/L,1./L)
 
@@ -38,7 +38,6 @@ V_1 = white_noise(sp,Vrms)
 A2 = 12e-6 # Signal amplitude [V]
 freq2 = 80  # Frequency of the sinewave [Hz]
 V_2 = A2*np.sin(2*np.pi*freq2*t_part)
-
 #---------------------------------------------------------
 # Signal 3: sinewave
 A3 = 6e-6   
@@ -46,16 +45,29 @@ freq3 = 170
 V_3 = A3*np.sin(2*np.pi*freq3*t_part)
 #---------------------------------------------------------
 
+# Combining all the three signals
+V_comb = V_1 + V_2 + V_3
 
-# Calculating the power spectrum in V^2/Hz
+# Evaluating the V_rms from statistical argument
+V_stat = np.std(V_comb)
+
+# Evaluating the V_rms from the Power spectrum
+P_V_comb = power_spectrum(V_comb,sp,L)
+P_V_comb_dB = dB(P_V_comb)
+totP_V_comb = tot_power(P_V_comb,sp,L)
+
+# Integrating over the power spectrum by means of the trapezoidal formula
+f_min = 0.
+f_max = f_part[int(sp/2)]
+area_P_comb = trapezoidal(P_V_comb[0:int(sp/2)],f_min,f_max,int(sp/2))
+
+# Evaluating the theorical total power of the combined signal
+totP_th = Vrms**2+A2**2/2+A3**2/2  # theoretical value of the power for the three (uncorrelated) signals
+
+# Calculating the power spectrum in V^2/Hz of the single components
 P_V1 = power_spectrum(V_1,sp,L)
 P_V2 = power_spectrum(V_2,sp,L)
 P_V3 = power_spectrum(V_3,sp,L)
-
-# Converting power spectrum in dB
-P_V1_dB = dB(P_V1)
-P_V2_dB = dB(P_V2)
-P_V3_dB = dB(P_V3)
 
 # Evaluating the total power of the three signal
 totP_V1 = tot_power(P_V1,sp,L)
@@ -66,64 +78,35 @@ totP_V3 = tot_power(P_V3,sp,L)
 f_min = 0.
 f_max = f_part[int(sp/2)]
 
-area_P_V1 = trapezoidal(P_V1[0:int(sp/2)],f_min,f_max,int(sp/2))
-area_P_V2 = trapezoidal(P_V2[0:int(sp/2)],f_min,f_max,int(sp/2))
-area_P_V3 = trapezoidal(P_V3[0:int(sp/2)],f_min,f_max,int(sp/2))
-
-# Evaluating the theorical total power of the combined signal
-totP_th = Vrms**2+A2**2/2+A3**2/2  # theoretical value of the power for the three (uncorrelated) signals
-
-# Combining signals:
-V_comb = V_1 + V_2 + V_3
-
-P_V_comb = power_spectrum(V_comb,sp,L)
-totP_V_comb = tot_power(P_V_comb,sp,L)
-area_P_comb = trapezoidal(P_V_comb[0:int(sp/2)],f_min,f_max,int(sp/2))
-
 # Printing results
+
+print("COMBINED SIGNAL: V_1 + V_2 + V_3")
+print("Statistical V_rms^2",V_stat**2)
+print("V_rms^2 from the trezoidal formula",area_P_comb)
+print("--------------------------------------------------------------------------------------------")
 print("SIGNAL 1")
-print("theoretical V_rms:",Vrms)
-print("V_rms calculated from the sum over the power spectrum component:",np.sqrt(totP_V1))
-print("V_rms calcilated by integrating the power spectrum with the trapezoidal rule:",np.sqrt(area_P_V1))
+print("theoretical V_rms:",Vrms**2)
+print("V_rms calculated from the sum over the power spectrum component:",totP_V1)
 print("--------------------------------------------------------------------------------------------")
 print("SIGNAL 2")
-print("theoretical V_rms:",A2/np.sqrt(2))
-print("V_rms calculated from the sum over the power spectrum component:",np.sqrt(totP_V2))
-print("V_rms calcilated by integrating the power spectrum with the trapezoidal rule:",np.sqrt(area_P_V2))
+print("theoretical V_rms:",A2**2/2)
+print("V_rms calculated from the sum over the power spectrum component:",totP_V2)
 print("--------------------------------------------------------------------------------------------")
 print("SIGNAL 3")
-print("theoretical V_rms:",A3/np.sqrt(2))
-print("V_rms calculated from the sum over the power spectrum component:",np.sqrt(totP_V3))
-print("V_rms calcilated by integrating the power spectrum with the trapezoidal rule:",np.sqrt(area_P_V3))
+print("theoretical V_rms:",A3**2/2)
+print("V_rms calculated from the sum over the power spectrum component:",totP_V3)
 print("--------------------------------------------------------------------------------------------")
 print("COMBINED SIGNAL: V_1 + V_2 + V_3")
-print("Theorical power of the combined signal:",totP_th, "Calculated power:",totP_V_comb )
-print("--------------------------------------------------------------------------------------------")
+print("Theorical power of the combined signal:",totP_th)
+print("Calculated power",totP_V_comb)
+print("Calculated power from the sum of the components",totP_V1+totP_V2+totP_V3)# Plotting the three signals as a function of time
 
-# Plotting the three signals as a function of time
 fig1, ax1 = plt.subplots(3, sharex = True)
 fig1.suptitle('Voltage signals (V)', fontsize=13)
 ax1[0].plot(t_part, V_1)
 ax1[1].plot(t_part, V_2)
 ax1[2].plot(t_part,V_3)
 ax1[2].set_xlabel("Time (s)")
-
-
-#Plotting the power spectra of the three signals in V^2/Hz 
-fig2, ax2 = plt.subplots(3, sharex = True)
-fig2.suptitle(r'Power spectra $(\frac{V^2}{Hz})$', fontsize=13)
-ax2[0].plot(f_part[0:int(sp/2)], P_V1[0:int(sp/2)])
-ax2[1].plot(f_part[0:int(sp/2)], P_V2[0:int(sp/2)])
-ax2[2].plot(f_part[0:int(sp/2)], P_V3[0:int(sp/2)])
-ax2[2].set_xlabel("Frequency (Hz)")
-
-#Plotting the power spectra of the three signals in dB
-fig3, ax3 = plt.subplots(3, sharex = True)
-fig3.suptitle(r'Power spectra (dB)', fontsize=13)
-ax3[0].plot(f_part[0:int(sp/2)], P_V1_dB[0:int(sp/2)])
-ax3[1].plot(f_part[0:int(sp/2)], P_V2_dB[0:int(sp/2)])
-ax3[2].plot(f_part[0:int(sp/2)], P_V3_dB[0:int(sp/2)])
-ax3[2].set_xlabel("Frequency (Hz)")
 
 #Plotting the power spectrum of the combined signal
 fig4, ax4 = plt.subplots()
