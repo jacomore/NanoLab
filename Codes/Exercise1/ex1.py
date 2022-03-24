@@ -4,32 +4,23 @@ import numpy as np
 from scipy.fft import fft,ifft
 from module_1 import *
 
-def rad_to_degree(rad_angle):
-    """
-    Returns the rad_angle, 
-    """
-    return 180./np.pi*rad_angle
-
-def degree_to_rad(degree_angle):
-    return np.pi/180*degree_angle
-
 # Sampling
-# length of the signal
+# Length of the signal
 L = 1
-# sampling frequency
+# Sampling frequency
 sf = 12      
-# sampling points
+# Sampling points
 sp = sf*L
-# time partition 
+# Time partition 
 t_part = np.linspace(0,L,sp,endpoint=False) #[s]
-# frequency partition
+# Frequency partition
 f_part = np.arange(0,sp/L,1/L)
 
 
 # Sinewave signal parameters
 freq = 1 # frequency of the signal in Hz (1/period)
-A = 2. # Amplitude of the signal [V]
-phi = 10 # phase shift of the signal [degree]
+A = 1. # Amplitude of the signal [V]
+phi = 0. # phase shift of the signal [degree]
 # Sinewave signal function
 omega = 2*np.pi*freq 
 func = A*np.sin(omega*t_part + degree_to_rad(phi))
@@ -74,16 +65,16 @@ ax[0].plot(t_part,func,"-",color = "red",label=r"$sin(\omega t)$")
 ax[0].plot(t_part,ift.real,".",color = "blue",label =r"$F^{-1}[F[\nu]]$")
 ax[0].legend()
 ax[0].set_xlabel("Time (s)")
-ax[0].set_ylabel(r"$sin(\omega t)$")
+ax[0].set_ylabel("Signal [a.u]")
 
 # plotting the modulus of the fourier transform
-ax[1].plot(f_part[0:int(sp/2)],modulus[0:int(sp/2)])
+ax[1].plot(f_part[0:int(sp/2)],modulus[0:int(sp/2)], marker='o',markerfacecolor="red")
 ax[1].set_xlabel("Frequency [Hz]")
-ax[1].set_ylabel("Amplitude")
+ax[1].set_ylabel("Amplitude [a.u]")
 
 # plotting the fourier transform (imaginary part)
-ax[2].plot(f_part[0:int(sp/2)],phase[0:int(sp/2)])
+ax[2].plot(f_part[0:int(sp/2)],rad_to_degree(phase[0:int(sp/2)])+90, marker='o',markerfacecolor="red")
 ax[2].set_xlabel("Frequency [Hz]")
-ax[2].set_ylabel("Phase")
+ax[2].set_ylabel("Phase [degree]")
 
 plt.show()

@@ -6,9 +6,9 @@ from module_1 import *
 
 # Sampling
 # length of the signal
-L = 20
+L = 2
 # sampling frequency
-sf = 5000      
+sf = 500      
 # sampling points
 sp = sf*L
 
@@ -48,20 +48,28 @@ V_3 = A3*np.sin(2*np.pi*freq3*t_part)
 # Combining all the three signals
 V_comb = V_1 + V_2 + V_3
 
-# Evaluating the V_rms from statistical argument
-V_stat = np.std(V_comb)
-
-# Evaluating the V_rms from the Power spectrum
+# Evaluating the power spectrum of the combined signal in V^2/Hz and in dB
 P_V_comb = power_spectrum(V_comb,sp,L)
 P_V_comb_dB = dB(P_V_comb)
-totP_V_comb = tot_power(P_V_comb,sp,L)
+
+# Evaluating the V_rms from statistical argument
+V_stat = np.std(V_comb)
 
 # Integrating over the power spectrum by means of the trapezoidal formula
 f_min = 0.
 f_max = f_part[int(sp/2)]
 area_P_comb = trapezoidal(P_V_comb[0:int(sp/2)],f_min,f_max,int(sp/2))
 
-# Evaluating the theorical total power of the combined signal
+print("COMBINED SIGNAL: V_1 + V_2 + V_3")
+print("Statistical V_rms^2",V_stat**2)
+print("V_rms^2 from the trapezoidal formula",area_P_comb)
+print("--------------------------------------------------------------------------------------------")
+
+
+# Evaluating the V_rms from the Power spectrum
+totP_V_comb = tot_power(P_V_comb,sp,L)
+
+# Evaluating the theoretical total power of the combined signal
 totP_th = Vrms**2+A2**2/2+A3**2/2  # theoretical value of the power for the three (uncorrelated) signals
 
 # Calculating the power spectrum in V^2/Hz of the single components
@@ -74,16 +82,7 @@ totP_V1 = tot_power(P_V1,sp,L)
 totP_V2 = tot_power(P_V2,sp,L)
 totP_V3 = tot_power(P_V3,sp,L)
 
-# Integrating over the power spectrum by means of the trapezoidal formula
-f_min = 0.
-f_max = f_part[int(sp/2)]
-
 # Printing results
-
-print("COMBINED SIGNAL: V_1 + V_2 + V_3")
-print("Statistical V_rms^2",V_stat**2)
-print("V_rms^2 from the trezoidal formula",area_P_comb)
-print("--------------------------------------------------------------------------------------------")
 print("SIGNAL 1")
 print("theoretical V_rms:",Vrms**2)
 print("V_rms calculated from the sum over the power spectrum component:",totP_V1)
@@ -97,9 +96,9 @@ print("theoretical V_rms:",A3**2/2)
 print("V_rms calculated from the sum over the power spectrum component:",totP_V3)
 print("--------------------------------------------------------------------------------------------")
 print("COMBINED SIGNAL: V_1 + V_2 + V_3")
-print("Theorical power of the combined signal:",totP_th)
-print("Calculated power",totP_V_comb)
-print("Calculated power from the sum of the components",totP_V1+totP_V2+totP_V3)# Plotting the three signals as a function of time
+print("Theoretical power:",totP_th)
+print("Power from the power spectrum of the combined signal",totP_V_comb)
+print("Power from the sum of the power of the single components",totP_V1+totP_V2+totP_V3)# Plotting the three signals as a function of time
 
 fig1, ax1 = plt.subplots(3, sharex = True)
 fig1.suptitle('Voltage signals (V)', fontsize=13)
@@ -134,7 +133,7 @@ length = 2 #s
 # iterating over the various sampling frequency
 for i,freq in enumerate(sf):
     sp = int(freq*length)
-    t = np.linspace(0,length,sp)
+    t = np.linspace(0,length,sp,endpoint=False)
     V_3 = A3*np.sin(2*np.pi*freq3*t)
     ax5[i].plot(t,V_3, label= str(freq)+" Hz")
     ax5[i].axhline(-A3, color = "red")
@@ -153,7 +152,7 @@ freq = 500 # Hz
 # iterating over the various length of the signal
 for i,length in enumerate(L):
     sp = int(freq*length)
-    t = np.linspace(0,length,sp)
+    t = np.linspace(0,length,sp,endpoint=False)
     V_3 = A3*np.sin(2*np.pi*freq3*t)
     ax6[i].plot(t,V_3, label= str(length)+" sec")
     ax6[i].axhline(-A3, color = "red")

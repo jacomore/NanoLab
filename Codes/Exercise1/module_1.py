@@ -60,4 +60,22 @@ def tot_power(Power,N,T):
     return tmp/T
 
 
+def rad_to_degree(rad_angle):
+    """
+    Returns the angle in degree if provided in radiant.
+    INPUT: 
+    	- rad_angle: REAL. Angle [rad]
+    OUTPUT: angle [degree]
+    """
+    return 180./np.pi*rad_angle
+
+def degree_to_rad(degree_angle):
+    """
+    Returns the angle in radiants if provided in degree.
+    INPUT: 
+    	- degree_angle: REAL. Angle [degree]
+    OUTPUT: angle [rad]
+    """
+    return np.pi/180*degree_angle
+
 

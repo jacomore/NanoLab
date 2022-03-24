@@ -4,6 +4,7 @@ import numpy as np
 from scipy.fft import fft,ifft
 from scipy.optimize import curve_fit 
 import pandas as pd
+from module_1 import rad_to_degree
 
 def PeaksFinder(arr,std):
     """
@@ -124,15 +125,6 @@ Z_peak = Z[pos]
 Z_phase = np.arctan2(Z_peak.imag,Z_peak.real)
 Z_modulus = np.abs(Z_peak)
 
-#  Creating a Bode plot of the impedance
-fig7, ax7 = plt.subplots(2,sharex = True)
-fig7.suptitle(r'Bode plot', fontsize=12)
-ax7[0].plot(f_part[pos],Z_modulus,".-",markersize=10, label = "Modulus")
-ax7[0].set_yscale('log')
-ax7[0].set_ylabel(r'$log_{10}(|Z|)$')
-ax7[1].plot(f_part[pos],Z_phase*180/np.pi,".-",markersize=10, label ="Phase")
-ax7[1].set_ylabel(r'$atan2(\frac{Im(Z)}{Re(Z)}) \ [\theta^°]$')
-
 # Guessing the value of resistance R and capacitance C
 R = 1e5   # R = 100 KOhm
 C = 1e-9  # C = 1nF
@@ -178,15 +170,20 @@ print("|Tau(phase)- Tau(modulus)|=", tau_phase_mod ,"+-",err_tau_phase_mod,"s")
 fit_phase = Z_RC_par_phase(freq_arr,par_phase)
 fit_modulus = Z_RC_par_mod(freq_arr,par_mod[0],par_mod[1])
 
-fig8,ax8 = plt.subplots(2)
-ax8[0].plot(f_part[pos],Z_phase,".",markersize = 10 ,color = "red", label ="data_DAQ")
-ax8[0].plot(freq_arr, fit_phase, color = "blue", label ="Fitting")
-ax8[0].set_title("Impedance phase")
-ax8[0].legend()
-ax8[1].plot(f_part[pos],Z_modulus,".", markersize = 10,color = "red", label ="data_DAQ")
-ax8[1].plot(freq_arr, fit_modulus, color = "blue", label ="Fitting")
-ax8[1].set_title("Impedance modulus")
-ax8[1].legend()
-fig8.tight_layout()
+fig7,ax7 = plt.subplots(2,sharex=True)
+ax7[0].plot(f_part[pos],rad_to_degree(Z_phase),".",markersize =10 ,color = "red", label ="data_DAQ")
+ax7[0].plot(freq_arr,rad_to_degree(fit_phase), color = "blue", label ="Fitting")
+ax7[0].set_title("Impedance phase")
+ax7[0].legend()
+ax7[0].set_ylabel(r'$atan2(\frac{Im(Z)}{Re(Z)}) \ [degree]$')
+ax7[1].set_ylabel(r'$|Z| \ \Omega$')
+ax7[1].plot(f_part[pos],Z_modulus,".", markersize = 10,color = "red", label ="data_DAQ")
+ax7[1].plot(freq_arr, fit_modulus, color = "blue", label ="Fitting")
+ax7[1].set_title("Impedance modulus")
+ax7[1].legend()
+ax7[1].set_yscale('log')
+ax7[1].set_xscale('log')
+ax7[1].set_xlabel("Fraquency [Hz]")
+fig7.tight_layout()
 
 plt.show()
