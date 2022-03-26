@@ -2,12 +2,21 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.fft import fft,ifft
 
-def gaussian(x,y0,A,x0,width): 
+def gaussian(x,y0,A,x0,width):
+    """
+    Return a Gaussian function.
+    -------------------------
+    INPUT:
+    x: x-data array
+    y0: offset
+    A: amplitude
+    x0: shift
+    width: standard deviation
+    """
     return y0 + A*np.exp(-(x-x0)**2/(2*width**2))
 
-
 # Length of the signal
-L = 1.25   #[s]
+L = 1.3   #[s]
 # sampl. freq
 fs = 1000   #[Hz]
 # sampling period
@@ -21,7 +30,7 @@ t_part = np.linspace(0,L,sp,endpoint=False)
 f_part = np.arange(0,sp/L,1/L)
 
 # sinewave definition
-freq = 10    #[Hz]
+freq = 5    #[Hz]
 sine = np.sin(2*np.pi*freq*t_part)
 
 # Fourier transform of sinewave
@@ -50,14 +59,12 @@ ax.plot(t_part,sine,label = "sine")
 ax.plot(t_part,sine_wind,label = "windowed sine")
 ax.legend()
 
-fig1,ax1 = plt.subplots(2,sharex=True)
+fig1,ax1 = plt.subplots()
 # Plotting sine_ft and sine_wind_ft in reciprocal space
-ax1[1].set_xlabel("Frequency [Hz]")
-ax1[1].set_xscale("log")
-ax1[0].set_yscale("log")
-ax1[0].plot(f_part[0:int(sp/2)],abs(sine_ft[0:int(sp/2)]))
-ax1[1].set_yscale("log")
-ax1[1].plot(f_part[0:int(sp/2)],abs(sine_wind_ft[0:int(sp/2)]))
-
+ax1.set_xlabel("Frequency [Hz]")
+ax1.set_ylabel("Amplitude [dB]")
+ax1.semilogx(f_part[0:int(sp/2)],20*np.log10(abs(sine_ft[0:int(sp/2)])), label="Normal")
+ax1.semilogx(f_part[0:int(sp/2)],20*np.log10(abs(sine_wind_ft[0:int(sp/2)])), label="Windowed")
+ax1.legend()
 
 plt.show()
