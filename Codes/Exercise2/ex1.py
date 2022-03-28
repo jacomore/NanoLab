@@ -2,10 +2,28 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def Re_Z(f,R1,R2,C2):
+    """
+    Return the real part of the complex impedance of a circuit formed by a series of a resistance (R1), a capacitor (C1) and a parallel of a resistance (R2) and a capacitor (C2).
+    ---------------------------------------------------------------------
+    INPUT: 
+        f: array, N dimensional. frequency array
+        R1, C1, R2, C2: real, scalar. Resistnces and capacitors.
+    OUTPUT:
+        Real part of the impedance
+    """
     w = 2*np.pi*f
     return R1 + R2/(1+(w*C2*R2)**2)
 
 def Im_Z(f,R1,C1,R2,C2):
+    """
+    Returns the imaginary part of the complex impedance of a circuit formed by a series of a resistance (R1), a capacitor (C1) and a parallel of a resistance (R2) and a capacitor (C2).
+    ---------------------------------------------------------------------
+    INPUT: 
+        f: array, N dimensional. frequency array
+        R1, C1, R2, C2: real, scalar. Resistnces and capacitors.
+    OUTPUT:
+        Real part of the impedance
+    """
     w = 2*np.pi*f
     return -1.0/(w*C1)-w*C2*R2**2/(1+(w*C2*R2)**2)
 
@@ -56,7 +74,3 @@ ax1.semilogx(f_part,10*np.log10(S))
 ax1.set_ylabel(r"$S_{\nu}$ [dB]")
 ax1.set_xlabel("Frequency [Hz]")
 plt.show()
-
-#----------------------------------------------------------
-
-Z = Z_real + 1j*Z_imag
